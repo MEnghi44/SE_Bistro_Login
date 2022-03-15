@@ -1,32 +1,25 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useDispatch, useSelector, } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../../redux/slices/loginSlice";
-import { clearState } from "../../redux/slices/loginSlice";
-import { Link,useNavigate  } from "react-router-dom";
-
+import { Link, useNavigate } from "react-router-dom";
 
 const Login = () => {
-  
   const loginstore = useSelector((state) => state.login);
-  console.log("loginstore",loginstore);
+  console.log("loginstore", loginstore);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isRevealPwd, setIsRevealPwd] = useState(false);
   const { register, handleSubmit } = useForm();
-
   const onSubmit = (data) => {
     dispatch(loginUser(data));
-    if(localStorage.token){
-       navigate("/");
-    }
-    
-    
-
   };
-  
-
+  useEffect(() => {
+    if (loginstore.select.status === "ok") {
+      navigate("/");
+    }
+  }, [loginstore.state]);
 
   return (
     <React.Fragment>
@@ -65,6 +58,7 @@ const Login = () => {
                 type={isRevealPwd ? "text" : "password"}
                 {...register("password")}
               />
+               {loginstore.error.message?<span className="label-text-alt my-5 text-red-100 text-base">{loginstore.error.message}</span>:""}
               <div
                 className="absolute mt-8 justify-self-end mr-4"
                 onClick={() => setIsRevealPwd((prevState) => !prevState)}
